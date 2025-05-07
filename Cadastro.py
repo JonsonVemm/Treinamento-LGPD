@@ -63,8 +63,8 @@ def cadastrar():
         flash('Inscrição realizada com sucesso!')
         return redirect('/')
     except Exception as e:
-        logging.error(f"Erro ao cadastrar: {e}")  # Agora vai aparecer nos logs do Render!
-        flash('Erro ao realizar inscrição')
+        logging.error(f"Erro ao cadastrar: {e}")
+        flash(f'Erro ao realizar inscrição: {e}')
         return redirect('/')
 
 @app.route('/baixar-cadastros')
