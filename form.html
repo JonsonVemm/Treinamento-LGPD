@@ -81,6 +81,16 @@
     </style>
 </head>
 <body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-danger" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="form-container">
         <h1>Inscrição - Treinamento LGPD</h1>
         
@@ -93,7 +103,7 @@
             👥 Limite: 30 participantes por turma
         </div>
 
-        <form id="cadastroForm">
+        <form method="POST" action="/cadastrar">
             <div class="form-group">
                 <label for="nome">Nome Completo:</label>
                 <input type="text" id="nome" name="nome" required>
@@ -126,48 +136,5 @@
             <button type="submit">Confirmar Inscrição</button>
         </form>
     </div>
-
-    <script>
-        document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                nome: document.getElementById('nome').value,
-                email: document.getElementById('email').value,
-                setor: document.getElementById('setor').value,
-                gestor: document.getElementById('gestor').value,
-                data_treinamento: document.querySelector('select[name="data_treinamento"]').value
-            };
-
-            try {
-                const response = await fetch('/.netlify/functions/cadastrar', {
-                    method: 'POST',
-                    body: JSON.stringify(formData),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-                const messageDiv = document.getElementById('message');
-                
-                if (response.ok) {
-                    messageDiv.className = 'flash-message flash-success';
-                    messageDiv.textContent = 'Inscrição realizada com sucesso!';
-                    document.getElementById('cadastroForm').reset();
-                } else {
-                    messageDiv.className = 'flash-message flash-error';
-                    messageDiv.textContent = result.error || 'Erro ao realizar inscrição';
-                }
-                
-                messageDiv.style.display = 'block';
-            } catch (error) {
-                const messageDiv = document.getElementById('message');
-                messageDiv.className = 'flash-message flash-error';
-                messageDiv.textContent = 'Erro ao realizar inscrição';
-                messageDiv.style.display = 'block';
-            }
-        });
-    </script>
 </body>
 </html>
