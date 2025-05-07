@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, flash, send_file, render_template_string
 import pandas as pd
 import os
+import logging
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', '123321')  # Usa variável de ambiente
@@ -62,7 +63,7 @@ def cadastrar():
         flash('Inscrição realizada com sucesso!')
         return redirect('/')
     except Exception as e:
-        print(f"Erro ao cadastrar: {e}")  # Isso vai aparecer nos logs do Render!
+        logging.error(f"Erro ao cadastrar: {e}")  # Agora vai aparecer nos logs do Render!
         flash('Erro ao realizar inscrição')
         return redirect('/')
 
