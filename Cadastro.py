@@ -25,41 +25,46 @@ def index():
 # Rota que recebe os dados do formulário
 @app.route('/cadastrar', methods=['POST'])
 def cadastrar():
-    nome = request.form['nome']
-    email = request.form['email']
-    setor = request.form['setor']
-    gestor = request.form['gestor']
-    data_treinamento = request.form['data_treinamento']
+    try:
+        nome = request.form['nome']
+        email = request.form['email']
+        setor = request.form['setor']
+        gestor = request.form['gestor']
+        data_treinamento = request.form['data_treinamento']
 
-    # Verifica se já existe o arquivo Excel
-    if os.path.exists(EXCEL_FILE):
-        df = pd.read_excel(EXCEL_FILE)
-        
-        # Verifica se já atingiu o limite para a data selecionada
-        inscritos_data = len(df[df['Data_Treinamento'] == data_treinamento])
-        if inscritos_data >= LIMITE_PARTICIPANTES:
-            flash(f'Desculpe, todas as vagas para a data {data_treinamento} já foram preenchidas.')
-            return redirect('/')
-    else:
-        df = pd.DataFrame(columns=['Nome', 'Email', 'Setor', 'Gestor', 'Data_Treinamento'])
+        # Verifica se já existe o arquivo Excel
+        if os.path.exists(EXCEL_FILE):
+            df = pd.read_excel(EXCEL_FILE)
+            
+            # Verifica se já atingiu o limite para a data selecionada
+            inscritos_data = len(df[df['Data_Treinamento'] == data_treinamento])
+            if inscritos_data >= LIMITE_PARTICIPANTES:
+                flash(f'Desculpe, todas as vagas para a data {data_treinamento} já foram preenchidas.')
+                return redirect('/')
+        else:
+            df = pd.DataFrame(columns=['Nome', 'Email', 'Setor', 'Gestor', 'Data_Treinamento'])
 
-    # Cria um dicionário com os dados
-    novo_dado = {
-        'Nome': nome,
-        'Email': email,
-        'Setor': setor,
-        'Gestor': gestor,
-        'Data_Treinamento': data_treinamento
-    }
+        # Cria um dicionário com os dados
+        novo_dado = {
+            'Nome': nome,
+            'Email': email,
+            'Setor': setor,
+            'Gestor': gestor,
+            'Data_Treinamento': data_treinamento
+        }
 
-    # Adiciona o novo registro
-    df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
+        # Adiciona o novo registro
+        df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
 
-    # Salva no Excel
-    df.to_excel(EXCEL_FILE, index=False)
+        # Salva no Excel
+        df.to_excel(EXCEL_FILE, index=False)
 
-    flash('Inscrição realizada com sucesso!')
-    return redirect('/')
+        flash('Inscrição realizada com sucesso!')
+        return redirect('/')
+    except Exception as e:
+        print(f"Erro ao cadastrar: {e}")  # Isso vai aparecer nos logs do Render!
+        flash('Erro ao realizar inscrição')
+        return redirect('/')
 
 @app.route('/baixar-cadastros')
 def baixar_cadastros():
