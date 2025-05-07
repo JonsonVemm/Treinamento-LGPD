@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, send_file, render_template_string
 import pandas as pd
 import os
 
@@ -8,6 +8,7 @@ app.secret_key = os.environ.get('SECRET_KEY', '123321')  # Usa variável de ambi
 # Nome do arquivo Excel
 EXCEL_FILE = 'cadastros.xlsx'
 LIMITE_PARTICIPANTES = 30
+UPLOAD_PASSWORD = "minhasenha123"  # Troque para uma senha forte!
 
 # Rota principal
 @app.route('/')
@@ -55,6 +56,36 @@ def cadastrar():
 
     flash('Inscrição realizada com sucesso!')
     return redirect('/')
+
+@app.route('/baixar-cadastros')
+def baixar_cadastros():
+    if os.path.exists(EXCEL_FILE):
+        return send_file(EXCEL_FILE, as_attachment=True)
+    else:
+        return "Nenhum cadastro encontrado.", 404
+
+@app.route('/upload-cadastros', methods=['GET', 'POST'])
+def upload_cadastros():
+    if request.method == 'POST':
+        senha = request.form.get('senha')
+        arquivo = request.files.get('arquivo')
+        if senha != UPLOAD_PASSWORD:
+            return "Senha incorreta!", 403
+        if arquivo and arquivo.filename.endswith('.xlsx'):
+            arquivo.save(EXCEL_FILE)
+            return "Arquivo enviado com sucesso!"
+        else:
+            return "Envie um arquivo .xlsx válido.", 400
+
+    # Formulário simples de upload
+    return render_template_string('''
+        <h2>Upload de cadastros.xlsx</h2>
+        <form method="post" enctype="multipart/form-data">
+            Senha: <input type="password" name="senha"><br>
+            Arquivo: <input type="file" name="arquivo" accept=".xlsx"><br>
+            <input type="submit" value="Enviar">
+        </form>
+    ''')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
