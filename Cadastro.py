@@ -27,6 +27,8 @@ def index():
 def cadastrar():
     nome = request.form['nome']
     email = request.form['email']
+    setor = request.form['setor']
+    gestor = request.form['gestor']
     data_treinamento = request.form['data_treinamento']
 
     # Verifica se já existe o arquivo Excel
@@ -39,12 +41,14 @@ def cadastrar():
             flash(f'Desculpe, todas as vagas para a data {data_treinamento} já foram preenchidas.')
             return redirect('/')
     else:
-        df = pd.DataFrame(columns=['Nome', 'Email', 'Idade', 'Data_Treinamento'])
+        df = pd.DataFrame(columns=['Nome', 'Email', 'Setor', 'Gestor', 'Data_Treinamento'])
 
     # Cria um dicionário com os dados
     novo_dado = {
         'Nome': nome,
         'Email': email,
+        'Setor': setor,
+        'Gestor': gestor,
         'Data_Treinamento': data_treinamento
     }
 
