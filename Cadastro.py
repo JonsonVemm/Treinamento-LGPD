@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', '123321')  # Usa variável de ambiente
 
 # Nome do arquivo Excel
-EXCEL_FILE = 'cadastros.xlsx'
+EXCEL_FILE = '/tmp/cadastros.xlsx'
 LIMITE_PARTICIPANTES = 30
 UPLOAD_PASSWORD = "minhasenha123"  # Troque para uma senha forte!
 
